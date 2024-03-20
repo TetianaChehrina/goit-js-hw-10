@@ -10,7 +10,7 @@ const hoursEl = document.querySelector('[data-hours]');
 const minutesEl = document.querySelector('[data-minutes]');
 const secondsEl = document.querySelector('[data-seconds]');
 
-let userSelectedDate = selectedDate =>
+let isPastDate = selectedDate =>
   selectedDate - Date.now() <= 0 ? true : false;
 
 const options = {
@@ -19,7 +19,7 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    if (userSelectedDate(selectedDates[0])) {
+    if (isPastDate(selectedDates[0])) {
       iziToast.error({
         title: 'Error',
         message: 'Please choose a date in the future',
@@ -38,7 +38,7 @@ const options = {
 };
 
 const calendar = flatpickr(inputDateTimePicker, options);
-let timerId;
+let timerId = null;
 
 startBtn.classList.add('start-timer');
 startBtn.addEventListener('click', onStartBtnClick);
@@ -55,7 +55,9 @@ function countDownTimeToSelectedDate() {
   const diff = calendar.selectedDates[0] - now;
   const remainTime = convertMs(diff);
 
-  startBtn.disabled = false;
+  // startBtn.disabled = false;
+  startBtn.disabled = true;
+  inputDateTimePicker.disabled = true;
 
   daysEl.textContent = `${addLeadingZero(remainTime.days)}`;
   hoursEl.textContent = `${addLeadingZero(remainTime.hours)}`;
@@ -73,6 +75,7 @@ function countDownTimeToSelectedDate() {
 
 function stopInterval() {
   clearInterval(timerId);
+  startBtn.disabled = false;
 }
 
 function convertMs(ms) {
